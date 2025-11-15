@@ -149,40 +149,112 @@ SELECT
 FROM casestudy3.car.sales;
 
 --------------------------------------------------------------------------------------
--- 
+-- Final code
+---------------------------------------------------------------------------------------
+--Final code 
 
-WITH DedupedSales AS (
+SELECT Year, 
+       INITCAP(Make) AS MAKE,
+       INITCAP(Model) AS MODEL,
+       INITCAP(body),
+       Trim,
+       INITCAP(Transmission) AS Transmission,
+       ROW_NUMBER() OVER(PARTITION BY VIN ORDER BY Make ASC)
+       AS row_count,
+       state,
+      
+  CASE 
+      WHEN make ILIKE ('%Mercedes%') THEN 'Mercedes-Benz'
+      WHEN make IN ('Landrover', 'Land Rover') THEN 'Land Rover'
+      WHEN make IN ('Vw','Volkswagen') THEN 'Volkswagen'
+      ELSE INITCAP(make) 
+  END AS Make,
+
+  CASE 
+      WHEN  color = '—' THEN NULL
+      ELSE  color
+  END AS  Color,
+
+  CASE 
+      WHEN interior = '—' THEN NULL
+      ELSE Interior
+  END AS Interior,
+       condition,
+       odometer,
+       Seller,
+       MMR,
+       Sellingprice,
+       COUNT(*) AS Units_Sold,
+       
+       TO_DATE(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS')) AS sale_date,
+       CAST(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS') AS TIME) AS sale_time,        
+       TO_VARCHAR(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS'), 'DY') AS sale_day
+       
+FROM casestudy3.car.sales;
+
+
+-------------------------------------------------------------------------------------------------------
+
+WITH RankedSales AS (
     SELECT 
-        *,
-        ROW_NUMBER() OVER(PARTITION BY VIN ORDER BY Make ASC) AS rn
-    FROM 
-        casestudy3.car.sales
-)
-SELECT 
-    Vin,
+        Year, 
+        INITCAP(Make) AS MAKE,
+        INITCAP(Model) AS MODEL,
+        INITCAP(body) AS Body,
+        Trim,
+        INITCAP(Transmission) AS Transmission,
+        ROW_NUMBER() OVER(PARTITION BY VIN ORDER BY saledate ASC) AS row_count, 
+        state,
     CASE 
         WHEN make ILIKE ('%Mercedes%') THEN 'Mercedes-Benz'
         WHEN make IN ('Landrover', 'Land Rover') THEN 'Land Rover'
         WHEN make IN ('Vw','Volkswagen') THEN 'Volkswagen'
         ELSE INITCAP(make) 
-    END AS New_Make,
-    INITCAP(Model) AS Model,
-    INITCAP(Body) AS Body,
-    INITCAP(Transmission) AS Transmission,
-    CASE 
-        WHEN interior = '—' THEN NULL
-        ELSE INITCAP(Interior)
-    END AS Interior,
-    CASE 
-        WHEN color = '—' THEN NULL
-        ELSE INITCAP(Color)
-    END AS Color,
-    Odometer,
-    TO_DATE(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS')) AS sale_date,
-    TO_VARCHAR(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS'), 'HH24:MI:SS') AS sale_time,
-    TO_VARCHAR(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS'), 'DY') AS sale_day
-FROM
-    DedupedSales
-WHERE
-    rn = 1;
+     END AS Standardized_Make,
+     
+     CASE 
+         WHEN  color = '—' THEN NULL
+         ELSE  color
+     END AS Color,
+     
+     CASE 
+         WHEN interior = '—' THEN NULL
+         ELSE Interior
+     END AS Interior,
+        condition,
+        odometer,
+        Seller,
+        MMR,
+        Sellingprice,
+        TO_DATE(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS')) AS sale_date,
+        CAST(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS') AS TIME) AS sale_time,        
+        TO_VARCHAR(TO_TIMESTAMP(saledate, 'DY MON DD YYYY HH24:MI:SS'), 'DY') AS sale_day
+    FROM 
+        casestudy3.car.sales 
+)
+
+SELECT 
+    Year, 
+    MAKE,
+    MODEL,
+    Body,
+    Trim,
+    Transmission,
+    state,
+    Standardized_Make,
+    Color,
+    Interior,
+    condition,
+    odometer,
+    Seller,
+    MMR,
+    Sellingprice,
+    sale_date,
+    sale_time,
+    sale_day
+FROM RankedSales
+WHERE row_count = 1 
+ORDER BY sale_date DESC;
+
+
    
