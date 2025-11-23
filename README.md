@@ -1,3 +1,6 @@
+
+---
+
 ## 2. README for **Bright-Car-Sales-Analysis**
 
 ```markdown
@@ -27,7 +30,7 @@ In this project I worked with a car sales dataset to perform an end-to-end analy
 3. **Analysis**:  
    - Aggregated unit counts by make/model/trim, by geography, by condition.  
    - Calculated min/max/average sale price by model or body type.  
-   - Identified trends over time.  
+   - Identified trends over time (if date field available).  
 4. **Presentation**: Generated summary tables and visualisations (charts) to show key findings, e.g., top selling models, price distribution, regional differences.  
 5. **Insights**: Derived business-relevant observations such as which segments are under-/over-performing, how condition affects price, where inventory may need adjustment.
 
@@ -48,6 +51,12 @@ In this project I worked with a car sales dataset to perform an end-to-end analy
 - Descriptive analytics and summarisation  
 - Data visualisation for business insights  
 - Structuring an analytics workflow from planning to presentation
+
+---
+
+## ✅ How to Use  
+```bash
+git clone https://github.com/lmakhurubetshi2-hub/Bright-Car-Sales-Analysis.git
 
 
 
